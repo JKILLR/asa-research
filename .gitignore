@@ -1,0 +1,71 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE / Editor
+.obsidian/
+.obsidianignore
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Internal session files (not public)
+memory/
+plans/
+experiments/
+retrospectives/
+state.md
+program.md
+program_gpu.md
+program_hard_mask.md
+program_periodic.md
+CLAUDE.md
+HOME.md
+run.log
+
+# RunPod sync staging
+runpod_sync/
+
+# Data caches
+cache/
+*.pt
+*.bin
+*.npy
+*.npz
+*.pkl
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Root-level loose files (pre-reorganization, now in src/ and figures/)
+/asa_toy.py
+/analysis.py
+/autotune_chart.py
+/model.py
+/scaling_chart.py
+/test_model.py
+/train.py
+/wave_model.py
+/periodic_table_viz.py
+/autotune_progress.png
+/periodic_table.png
+/progress.png
+/progress_gpu.png
+/scaling_chart.png
+/results.tsv
+/results_full.tsv
+/results_*.json
