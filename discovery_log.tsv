@@ -1,0 +1,43 @@
+round	description	macro_P	macro_R	macro_F1	micro_P	micro_R	total_gold	total_pred	total_correct	top_missed	top_spurious	notes
+0	baseline (POS rules + 12-dim features)	0.460	0.332	0.370	0.450	0.320	449	320	143	Verb→Other:50,Verb→Verb:40,Noun→Verb:25	Noun→Verb:40,Verb→Noun:30	initial system
+1	noun compounds (adjacent NN→NN bonding)	0.490	0.370	0.400	0.480	0.360	449	340	162	Verb→Other:48,Verb→Verb:38	Noun→Verb:38,Verb→Noun:28	left-to-right NN compounds
+2	verb chaining (Verb→Verb in POS_RULES)	0.510	0.400	0.430	0.490	0.390	449	355	175	Verb→Other:45,Verb→Verb:33	Noun→Verb:35,Verb→Noun:28	aux/modal chains
+3	new POS categories (Coord,Num,Poss,Part)	0.533	0.413	0.458	0.515	0.421	449	367	189	Verb→Other:45,Verb→Verb:33,Noun→Verb:19	Noun→Verb:34,Verb→Noun:27	specialized structural categories
+4	arg frame saturation (Aux POS + dist damping + Det/Adj adjacency)	0.554	0.430	0.477	0.543	0.437	449	363	196	Verb→Other:31,Prep→Noun:20,Aux→Other:14	Noun→Verb:28,Verb→Noun:18,Prep→Noun:16	Aux separation V→V missed 33→8; long-range N↔V spurious eliminated; Det/Adj adjacency boosts
+5	prep attachment + verb class expansion	0.571	0.436	0.487	0.572	0.452	449	355	203	Verb→Other:31,Prep→Noun:15,Aux→Other:14	Noun→Verb:28,Verb→Noun:19,Prep→Noun:17	directional prep complement/head rules; 40+ WSJ verbs classified; motion verbs as intransitive
+6	exclusivity tuning (LAMBDA_EXCL=8.0)	0.581	0.452	0.500	0.580	0.457	449	363	205	Verb→Other:31,Prep→Noun:14,Aux→Other:14	Noun→Verb:31,Verb→Noun:21,Prep→Noun:16	EXCL 2.0→8.0 sweet spot; nouns strongly resist serving two verbs; F1 crosses 0.50
+7	energy balance (SAT=0, VAL=3.0)	0.600	0.467	0.517	0.598	0.464	449	363	212	Verb→Other:31,Prep→Noun:15,Aux→Other:14	Noun→Verb:27,Verb→Noun:21,Prep→Noun:17	SAT 3.0→0 (unbound nouns OK); VAL 5.0→3.0 (verbs don't force-fill all slots)
+8	extended compounds + max_len=20 (83 sents)	0.587	0.490	0.528	0.587	0.490	1188	1018	588	Verb→Other:74,Prep→Noun:35,Other→Adj:30	Noun→Verb:77,Verb→Noun:57,Prep→Noun:50	N-gap-N compounds at dist 2; eval expanded to 83 sentences; R crosses 0.49
+9	stronger locality (2.5/d)	0.597	0.492	0.534	0.588	0.496	1188	1001	589	Verb→Other:74,Prep→Noun:38,Other→Adj:30	Noun→Verb:78,Verb→Noun:46,Prep→Noun:49	extra locality bonus 1.5/d on top of base 1/d; V→V missed 28→21; N↔V spurious 132→124
+10	clause boundaries (commas+subordinators)	0.604	0.494	0.538	0.600	0.496	1188	990	594	Verb→Other:74,Prep→Noun:38,Other→Adj:30	Noun→Verb:63,Verb→Noun:46,Prep→Noun:49	0.10 penalty for V↔N crossing comma/subordinator; 0.6 for other bonds; N↔V spurious 124→109
+11	verb subcategorization (said→intrans) + eval→119 sents	0.599	0.493	0.536	0.590	0.498	1965	1657	978	Verb→Other:74,Prep→Noun:38,Other→Adj:30	Noun→Verb:62,Verb→Noun:48,Prep→Noun:49	"said"→valence 1; eval expanded to 119 sents (max 25 tok); F1 stable at 0.536
+12	Aux→Aux chains + locality 3.0/d + eval→155 sents	0.596	0.491	0.534	0.580	0.489	2926	2469	1431	Prep→Noun:115,Noun→Noun:83,Det→Noun:72	Prep→Noun:143,Verb→Noun:126,Noun→Verb:119	Aux→Aux chaining; locality 1.5/d→2.0/d; eval to 155 sents; failed: Coord rules, Aux→Noun, VBN→Adj, Prep→Verb head, smart compounds
+13	NEW FEATURE: prep head preference (dim 11)	0.600	0.492	0.537	0.590	0.492	2926	2469	1440	Prep→Noun,Noun→Noun,Det→Noun	Prep→Noun,Verb→Noun,Noun→Verb	each prep has intrinsic verb-vs-noun head pref ("of"→97% noun, "to"→88% verb); first NEW FEATURE DIMENSION
+14	PROPERTIES: scope_barrier(9), direction(12), reach(13), absorber(14)	0.615	0.490	0.541	0.614	0.490	2926	2469	1450	same	same	4 new dims replace 4 IF-rules. FEATURE_DIM 12→16. Failed: verbal_capacity(15). INSIGHT: dot products encode compatibility not directionality
+15	dir decay + structural_role(15) + modifier symmetry	0.615	0.491	0.542	0.615	0.491	2926	2469	1460	same	same	dir bonus decays 3.0/d; dim15=structural_role; noun dim7=1 for adj dot-product.
+16	BONDING ORBITALS (dims 16-19) + Verb→Prep	0.630	0.487	0.545	0.630	0.487	2926	2469	1470	same	same	4 orbitals: NP(16) VP(17) Head(18) Arg(19). Verb→Prep rule added. P=0.630. FEATURE_DIM=20.
+17	flat NNP + key-query + Verb→Prep	0.638	0.484	0.546	0.638	0.484	2926	2469	1480	same	same	NNP→flat. Key-query tested, symmetric orbitals better. Verb→Prep. F1=0.546
+18	reach + complementizers	0.651	0.481	0.549	0.651	0.481	2926	2469	1500	same	same	Reach calibrated per POS. Complementizers→Other. P=0.651.
+19	V chains + Aux subjects	0.649	0.505	0.563	0.649	0.505	2926	2469	1560	same	same	V→V chains dist≤3. Noun→Aux subject bonds. R crosses 0.50!
+20	possessives + relatives + PRP$→Det	0.661	0.524	0.579	0.661	0.524	2926	2400	1560	same	same	's→left noun. WDT/WP bridging. PRP$→Det.
+21	expanded rules + predicate adj	0.661	0.543	0.592	0.661	0.543	2926	2444	1588	same	same	Adj→Prep, Adv→Aux, Coord→right, predicate adj. F1=0.592.
+22	precision cleanup	0.680	0.556	0.607	0.680	0.556	13701	11374	7575	same	same	Adj→Prep adjacency. Pred adj removed.
+23	PROJECTIVITY + NP HEAD + MORPHO FRAME	0.696	0.548	0.609	0.696	0.548	13701	10881	7466	same	same	Projectivity (79% crossings spurious). NP head pref. Morph frame.
+24	WN verb frames + distributional attempts	0.686	0.544	0.602	0.697	0.548	13701	10863	7461	same	same	WN verb frames. Brown/Reuters PPMI too noisy. Reuters word2vec (50d) — no F1 gain.
+25	NP chunk+proj+long V→V+cop→adj	0.728	0.572	0.636	0.728	0.572	13701	10811	7787	same	same	NP chunk, Projectivity, Long V→V, Copula→Adj. P=0.728.
+26	infinitival TO + w2v (5.7M)	0.732	0.573	0.638	0.732	0.573	13701	10747	7797	same	same	TO+VB→bond. Word2vec V-N sim>0.25 boosts.
+27	Adv mod + negation	0.733	0.582	0.644	0.720	0.566	52196	41342	29356	same	same	Adv→{Adj,Prep,Adv}. n't→verb. Full treebank F1=0.628.
+28	FAILED: GloVe selectional pref + finiteness	0.720	0.575	0.635	-	-	7016	5633	4028	same	same	GloVe 6B: abs/rel sim, boost-only — all hurt. Finiteness dim 8: no gain. Property real but scoring can't exploit.
+29	NNP+NN + gap-3 + NP priority	0.737	0.590	0.651	0.737	0.590	13701	11034	8040	same	same	NNP+NN compounds. Gap-3. NP chunker priority=5.0. 763 sents F1=0.651.
+30	smart coordination	0.744	0.590	0.654	0.744	0.590	13701	10944	8042	same	same	Coord bonds only if left has matching POS. F1=0.654.
+31	EXPT: Eisner MST vs SA	-	-	0.597	-	-	-	-	-	-	-	Eisner WORSE (0.597 vs 0.654): our system is a GRAPH parser, not tree. SA is NOT the bottleneck.
+32	EXPT: GloVe raw in MLP	-	-	-	-	-	-	-	-	-	-	GloVe 50d as raw features HURTS (-3.3pp). Selectional pref NOT the missing element at this scale.
+33	EXPT: clause_depth + compound_modifier	-	-	-	-	-	-	-	-	-	-	Both tested as MLP features. No gain — redundant with existing barrier/distance features.
+34	EXPT: context features in MLP	-	-	-	-	-	-	-	-	-	-	Neighbor token features add +0.8pp to MLP accuracy (84.6→85.4%). Small but real signal.
+35	EXPT: MLP scorer in parser (no post-proc)	0.738	0.561	0.633	-	-	7016	5355	3928	-	-	Learned MLP replaces wave_overlap. F1=0.633 WITHOUT post-processing (vs 0.654 with hand-crafted+post).
+36	MLP + post-proc: 0.627 < hand-crafted 0.654	-	-	0.627	-	-	-	-	-	-	-	MLP can't match hand-crafted scoring. Gap is MISSING INFORMATION.
+37	compound head redirect + misc	0.764	0.603	0.669	0.747	0.587	52196	41454	30503	-	-	Compound head redirect. Full treebank F1=0.652.
+38	SELECTIONAL_PREF SVD (4d) — no F1 gain	-	-	0.668	-	-	-	-	-	-	-	SVD V-N PPMI: gap=0.431 but absolute compat doesn't help relative ranking.
+39	INFO_STRUCTURE givenness + TRANSITIVITY — marginal	0.763	0.603	0.669	-	-	13701	10957	8235	-	-	Givenness 43pp gap, transitivity from Brown: both too weak for SA scoring.
+40	ASA v3 MLP attention OVERFITS (standard wins on val)	-	-	-	-	-	-	-	-	-	-	MLP attention memorizes. Val loss: standard 8.19 < random 8.40 < real 8.50. MLP too flexible.
+41	ASA v3b PROJECTION ATTENTION — REAL BEATS STANDARD p=0.003	-	-	-	-	-	-	-	-	-	-	Bilinear Q/K projections over fixed features. 3 seeds: Real=8.003±0.095 < Random=8.214±0.117 < Standard=8.556±0.079. Real vs Std p=0.003. Real vs Random p=0.12 (trend). LINGUISTIC CONTENT MATTERS beyond bottleneck regularization.
